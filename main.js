@@ -308,6 +308,17 @@ const glados = async () => {
         console.log(
           `[${tag}] 本次获得积分: ${Number.isFinite(gained) ? gained + ' 分' : '未返回'} | 服务端消息: ${action?.message || ''}`
         )
+        // 诊断：服务端在签到响应里返回了 breakdown（含光缆指数 cableScore），
+        // 之前脚本只读 action.points 而忽略了它。记录下来以确认光缆加成归零的根因。
+        if (action?.breakdown) {
+          const bd = action.breakdown
+          console.log(`[${tag}] 🔬 计分明细 breakdown: ${JSON.stringify(bd)}`)
+          console.log(
+            `[${tag}] 🔬 光缆指数 cableScore: ${bd.cableScore != null ? bd.cableScore : '不可用(unavailable)'} | streakDays: ${bd.streakDays ?? '?'} | points: ${bd.points ?? '?'}`
+          )
+        } else {
+          console.log(`[${tag}] ⚠️ 服务端未返回 breakdown，无法查看 cableScore（脚本此前一直忽略此字段）`)
+        }
       }
 
       // 2. 账号状态
